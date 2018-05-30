@@ -1,0 +1,15 @@
+2/14 : 기본적인 Prefab 생성 - Player, Enemy1, Enemy2 (sprite, animator, animator override controller)
+
+모든 충돌들이 체크될 레이어 - BlockingLayer
+스프라이트 랜더러를 위해 Sorting Layer 세팅
+Boxcollider 2D : 플레이어와 관련된 충돌을 감지하게 해준다
+Rigidbody 2D : 플레이어를 물리 시스템을 통해 움직이게 해줌
+Is Kinematic on: 안날라댕기게 할것이기에, 격자 기반 공간에서 움직일 것
+Boxcollider Size 조절 - 0.9
+Enemy1과 Enemy2의 상태 머신 공유 - 애니메이터 오버라이드 컨트롤러 사용
+-> 같은 상태 머신을 사용하고, 조작을 위해 같은 스크립트를 사용하도록 하면서도
+각각의 상태에 다른 애니메이션을 재생하도록 한다.
+애니메이터 오버라이드 컨트롤러 Enemy2 생성
+어떤 컨트롤러를 재정의(Override)할 지 결정 - Enemy1 animator controller 연결
+override할 애니메이션 연결 - Enemy2Attack, Enemy2Idle,
+Enemy2 GameObject의 Animator 컴포넌트의 Controller에 애니메이터 오버라이드 컨트롤러 연결
