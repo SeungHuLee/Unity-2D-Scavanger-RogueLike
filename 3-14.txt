@@ -1,0 +1,21 @@
+3-14
+
+타일 Prefab 제작 : 바닥, 음식, 방해물, 출구
+빈 GameObject Floor1 생성, Sprite renderer 컴포넌트 추가
+Sprite 지정, Sorting Layer - Floor로 지정
+Floor1 ~ 8까지 반복
+
+Exit 타일 - Box Collider 2D 컴포넌트 추가 (이동 시 감지)
+Is Trigger로 설정 - 해당 타일 위로 이동하는 것을 막지 않지만 트리거로서 작용
+Sorting Layer - Items로 지정(바닥보단 위, 플레이어보단 아래에 표시된다) - Tag를 Exit로 변경
+
+Food 타일 - Sorting Layer Items로, Tag Food로 - Box Collider 2D 추가, Is Trigger
+Soda 타일 - Sorting Layer Items로, Tag Soda로 - Box Collider 2D 추가, Is Trigger 
+(Layer는 Default로 둔다, 적이나 플레이어를 접근 불가능하게 막지 않기 때문. (먹어진다))
+
+OuterWall1 타일 - Is Trigger 해제(해당 공간으로 접근할 시 막음) Tag Untagged - Layer BlockingLayer로 (플레이어의 움직임을 막음)
+Sorting Layer - Floor로 지정
+Wall1 타일 - Sorting Layer - Items로 지정 - Layer - BlockingLayer(움직임 막음)
+해당 작업 반복
+           
+
