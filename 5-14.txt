@@ -1,0 +1,41 @@
+5-14 
+GameManager script 작성을 통해 BoardManager에 일 시키기
+
+GameManager에 BoardManager.cs와 GameManager.cs를 드래그 드롭
+
+public BoardManager boardScript; // BoardManager class
+private int level = 3; // 로그 함수를 이용했기 때문에 레벨 2부터 적이 등장
+
+Start()를 지우고 Awake()로 바꿔줌. // 스크립트가 실행될 때 한 번만 실행되는 함수. 코루틴 사용 불가. 스크립트가 비활성화 되어있어도 실행됨. 주로 게임의 상태 값 또는 변수 초기화에 사용
+1. boardScript = GetComponent<BoardManager>(); // hierarchy상의 GameManager에 넣은 BoardManager 컴포넌트를 Get 해서 BoardManager 클래스 변수 boardScript에 할당
+2. InitGame();
+
+void InitGame() {
+boardScript.SetUpScene(level);
+}
+
+인스펙터를 잠금하고 프리팹들 드래그드롭 배치
+인스펙터 잠금 해제
+카메라 위치 수정 
+
+GameManager Singleton화 // 게임 상에 언제나 단 하나의 인스턴스만 존재할 수 있는 오브젝트
+public static GameManager instance(이름) = null;
+Awake()에 추가
+if(instance == null)
+instance = this;
+else if (instance != this) // != null, !=this 일 시
+Destroy(gameObject); // 실수로 두 개의 GameManager가 생기지 않도록 제한
+
+게임 시작 시 GameManager를 불러 올 스크립트 Loader 생성
+GameManager가 인스턴스화 되었는 지 체크해서, 그렇지 않다면 Prefab으로부터 하나 인스턴스화 한다.
+public GameObject gameManager;
+Start()를 Awake()로. 
+if (GameManager.instance == null) // GameManager.cs의 public static 변수 instance 접근
+Instantiate(gameManager);
+Update()지움
+
+GameManager를 Hierarchy에서 지우고
+Loader.cs를 Main Camera에 드래그 드롭
+GameManager.Prefab을 드래그 드롭
+
+
