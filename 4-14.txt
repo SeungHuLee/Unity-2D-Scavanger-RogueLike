@@ -1,0 +1,97 @@
+4-14
+Board Manager 스크립팅
+
+랜덤 타일 배치를 통한 레벨 디자인
+
+BoardManager.csharp
+GameManager.csharp
+
+보드매니저에 레벨 생성 코드 추가
+플레이어가 새 게임을 시작할 때 마다 랜덤하게 구성된 레벨을 생성
+
+namespace 추가 - using System; // 직렬화(Serializable)속성 사용.
+직렬화 보드 - 변수들이 어떻게 에디터에 있는 인스펙터에 나타날 지 여부(FoldOut) 수정
+namespace 추가 - using System.Collections.Generic; // List사용
+namespace 추가 - using Random = UnityEngine.Random; (system에도 random, unityengine에도 랜덤이 있기 때문에 특정해야함)
+[Serializable]
+직렬화 public class Count
+
+public int minimum, maximum;
+생성자 Count = 클래스 생성 시 min max값 지정
+
+게임보드의 차원을 위한 columns, rows 변수 지정. 이들을 바꿈으로 게임보드 사이즈 조정 가능
+(초기설정 8x8)
+
+public Count wallCount 를 통해 한 레벨 당 minimum min개, maximum max개의 벽이 생기도록 범위 설정
+(초기설정 최소 5개, 최대 9개)
+public Count foodCount 를 통해 한 레벨 당 minimum min개, maximum max개의 음식이 생기도록 범위 설정
+(초기설정 최소 1개, 최대 5개)
+
+소환할 Prefab들을 잡아둘 변수들 선언
+GameObject exit (1개)
+
+이외 배열을 사용(여러 오브젝트들을 넣고, 그 중에 랜덤으로 골라서 소환)
+public GameObject[] floorTiles;
+public GameObject[] wallTiles;
+public GameObject[] enemyTiles;
+public GameObject[] foodTiles;
+public GameObject[] outerWallTiles;
+(인스펙터에서 여러 Prefab들을 넣어 각각의 배열을 채운다)
+
+private 변수 설정
+private Transform boardHolder; (hierarchy 깨끗이 두기. 많은 GameObject를 소환하기 때문에 전부 boardHolder의 자식으로 넣음)
+private List <Vector3> gridPositions = new List<Vector3>(); (게임보드 상의 가능한 모든 위치들을 추적하기 위해(ex: 오브젝트의 해당장소 존재유무 추적)
+
+void InitializeList() {} 
+gridPositions.Clear(); // gridPositions 멤버함수인 Clear함수를 통해 초기화
+
+삼차원 벡터로 지정된 게임상의 위치값으로 리스트를 채움
+x축, y축에 해당하는 nested for문 사용
+for (int x = 1; x < columns - 1; x++) { // 1을 빼는 이유는 외벽과 인접한 0,0라인에 벽이 생기면 통과 불가능한 레벨이 생성될 수 있기 때문.
+for (int y = 1; y < rows - 1; y++) {
+gridPositions.Add(new Vector3(x,y,0f)); // 멤버함수 add를 통해 (1,~),(2,~)로 List에 Vector3 좌표값을 할당.
+}
+}
+
+void BoardSetup() {} // 미리 선언한 Transform 변수 boardHolder에 새 GameObject "Board"의 transform 컴포넌트값을 넣어준다
+for (int x = -1; x < columns + 1; x++) {
+for (int y = -1; y < rows + 1; y++) { // x,y좌표를 순회하는 nested for 루프.
+GameObject toInstantiate = floorTiles[Random.Range(0,floorTiles.Length)];// 루프문을 사용해 바닥과 외벽 타일을 구성한다
+// Instantiate할 타일을 결정하는 GameObject형 변수 toInstantiate 선언. 0~floorTile.Length 사이에서 랜덤하게 숫자 n을 골라 floorTile[n]과 같은 값에 있는 타일을 가져올 준비. length로 지정했기에 재사용 용이
+
+if (x == -1 || x == columns || y == -1 || y == rows) {// 외벽이 놓여야할 위치에 있는 지 if문으로 확인
+	toInstantiate = outerWallTiles[Random.Range(0, outerWallTiles.Length)]; // true이면 outerWallTiles 배열에서 0~Length까지 중 랜덤으로 인덱스 지정해 어떤 타일을 가져올 지 준비
+
+GameObject instance = Instantiate(toInstantiate, new Vector3 (x,y,0f), Quarternion.identity); // 어떤 타일이 인스턴스화 될 지 결정했으므로 실제로 인스턴스화 한다. GameObject 변수 instance를 선언하고, Instantiate()함수를 사용하여 toInstantiate, 좌표 new Vector3((현 루프 위치)x,y,0f), (회전값 없이) Quarternion.identity) as GameObject (GameObject로 cast한다);
+
+instance.transform.SetParent(boardHolder); // 아까 선언한 hierarchy를 깔끔하게 두기 위한 boardHolder에 instance로 생성된 Prefab을 자식화 시킨다
+
+벽, 적, 파워업등을 랜덤하게 생성할 것
+Vector3 리턴하는 RandomPosition() // gridPositions에서 랜덤 위치를 뽑는다
+int randomIndex = Random.Range(0, gridPositions.Count); // 0~gridPositions에 저장된 위치 값의 개수만큼
+Vector3 randomPosition = gridPositions[randomIndex]; // 랜덤좌표값. gridPositions[]에 랜덤하게 결정된 인덱스에 저장된 좌표를 저장한다.
+gridPositions.RemoveAt(randomPositions); // 같은 장소에 겹치게 소환되지 않게 하기 위해 gridPositions[randomIndex]에 있는 값을 제거해줌.
+return randomPosition; // 랜덤 좌표를 리턴한다. 이를 통해 랜덤한 위치에 오브젝트를 소환할 수 있다.
+
+void LayoutObjectAtRandom(GameObject[] tileArray, int minimum, int maximum) // 실제로 오브젝트를 소환 할 함수
+int objectCount = Random.Range(minimum, maximum + 1); // 오브젝트를 얼마나 생성할 지 지정
+
+for (int i = 0; i < objectCount; i++)
+vector3 randomPosition = RandomPosition(); // RandomPosition() 함수로부터 랜덤한 vector3 좌표를 받아 저장
+GameObject tileChoice = tileArray[Random.Range(0, tileArray.Length)]; // 인수로 받은 tileArray 내부의 타일 종류 중 하나를 랜덤으로 골라 GameObject화 시킴
+Instantiate (tileChoice, randomPosition, Quarternion.identity); // 위에서 지정한 GameObject를 랜덤 위치에 인스턴스화 시킴. 
+
+Start() 와 Update()를 지운다
+
+public void SetUpScene(int level) // 해당 스크립트의 유일한 public 함수. 게임보드가 만들어질 때 게임매니저에 의해 호출된다.
+BoardSetup();
+InitializeList();
+LayoutObjectAtRandom(wallTiles, wallCount.minimum, wallCount.maximum);
+LayoutObjectAtRandom(foodTiles, foodCount.minimum, foodCount.maximum);
+int enemyCount = (int)Mathf.Log(level, 2f); //Mathf는 float로 리턴하기에 int로 cast해준다. 로그함수 사용. 레벨2 -> 적 1명. 레벨4 -> 2명 ~
+LayoutObjectAtRandom(enemyTiles, enemyCount, enemyCount); // 랜덤 범위를 특정하지 않았기에 min과 max값이 동일하다.
+
+
+
+
+
