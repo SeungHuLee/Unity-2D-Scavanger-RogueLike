@@ -1,0 +1,21 @@
+7-14
+Wall 스크립트. 플레이어가 벽을 부술 수 있게 해준다
+
+public sprite dmgSprite; // 벽을 한 번 때렸을 때의 스프라이트
+public int hp = 4;
+
+private SpriteRenderer spriteRenderer;
+
+Start()를 Awake()로
+
+spriteRenderer = GetComponent<SpriteRenderer>();
+
+Update() 지운다
+
+public void DamageWall (int loss) { // 성공적으로 벽을 공격했을 시, 시각적(sprite)변화를 주는 함수
+spriteRenderer.sprite = dmgSprite; // 함수가 호출되면, Render할 스프라이트를 dmgSprite로 변경
+hp -= loss; // 또한 hp에서 loss만큼 뺀다.
+
+if (hp <= 0)
+gameObject.SetActive(false); // hp가 0 이하 일 시 gameObject를 비활성화 한다.
+}
