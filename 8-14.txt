@@ -1,4 +1,4 @@
-8-14
+8-14 
 Player Animator Controller
 스크립트로 애니메이션 재생 제어
 
