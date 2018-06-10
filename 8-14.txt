@@ -1,0 +1,33 @@
+8-14
+Player Animator Controller
+스크립트로 애니메이션 재생 제어
+
+default 애니메이션 - PlayerIdle
+다른 애니메이션들을 실행할 때 사용할 파라미터 생성
+playerChop : trigger형. 트랜지션에 사용된 후(호출된 프레임) 즉시 리셋됨
+
+PlayerIdle -> PlayerChop 트랜지션 생성. 반대로도 생성.
+->방향 트랜지션 설정 : Has Exit time 해제 : 트랜지션 하기 위해 PlayerIdle이 다 끝날 때 까지 기다리지 않는다. (곧바로 전환)
+Settings - Transition Duration을 0으로. (스프라이트 기반 애니메이션 일 때는 항상. 3D일 시는 서로 다른 애니메이션 state 사이에 blend를 사용)
+Conditions에 playerChop trigger 추가. // 트랜지션이 일어날 조건
+
+PlayerChop -> PlayerIdle 트랜지션 설정
+Has Exit Time 활성화
+Settings - Exit Time을 1로 설정 // PlayerChop 애니메이션이 끝나면 트랜지션 발생
+	 - Transition Duration을 0으로.
+// Exit Time을 설정해 주었으므로 Condition은 필요하지 않음
+
+비슷한 작업을 PlayerIdle -> PlayerHit 에도 반복
+PlayerIdle -> PlayerHit Has Exit Time 해제 // 맞았을 때 중단하고 바로 interrupt해야 하기 때문
+Setting - Transition Duration을 0으로. 
+Conditions에 playerHit 추가
+
+PlayerHit->PlayerIdle
+Has Exit Time 활성화
+Settings - Exit Time 1로
+	 - Transition Duration을 0으로.
+
+
+
+
+
